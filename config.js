@@ -1,7 +1,7 @@
-const dotenv = require("dotenv");
-const assert = require("assert");
+import { config } from "dotenv";
+import assert from "assert";
 
-dotenv.config();
+config();
 
 const {
   PORT,
@@ -17,18 +17,16 @@ const {
   MEASUREMENT_ID,
 } = process.env;
 
-module.exports = {
-    port: PORT,
-    host: HOST,
-    url: HOST_URL,
-    firebaseConfig = {
-        apiKey: API_KEY,
-        authDomain: AUTH_DOMAIN,
-        databaseURL: DATABASE_URL,
-        projectId: PROJECT_ID,
-        storageBucket: STORAGE_BUCKET,
-        messagingSenderId: MESSAGING_SENDER_ID,
-        appId: APP_ID,
-        measurementId: MEASUREMENT_ID
-    }
-}
+export const port = PORT;
+export const host = HOST;
+export const url = HOST_URL;
+export const firebaseConfig = {
+  apiKey: API_KEY,
+  authDomain: AUTH_DOMAIN,
+  databaseURL: DATABASE_URL,
+  projectId: PROJECT_ID,
+  storageBucket: STORAGE_BUCKET,
+  messagingSenderId: MESSAGING_SENDER_ID,
+  appId: APP_ID,
+  measurementId: MEASUREMENT_ID,
+};

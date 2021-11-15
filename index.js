@@ -1,16 +1,14 @@
-const express = require("express");
-const cors = require("cors");
-const config = require("./config");
-const routes = require("./routes/routes");
+import express, { json, urlencoded } from "express";
+import cors from "cors";
+import { port, url } from "./config.js";
+import routes from "./server/routes/routes.js";
 
 const app = express();
 
-app.use(express.json());
+app.use(json());
 app.use(cors());
-app.use(express.urlencoded());
+app.use(urlencoded());
 
-app.use("/api", routes.routes);
+app.use("/api", routes);
 
-app.listen(config.port, () =>
-  console.log("App is listening on url " + config.host)
-);
+app.listen(port, () => console.log("App is listening on url " + url));

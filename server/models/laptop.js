@@ -7,4 +7,4 @@ class Laptop {
   }
 }
 
-module.exports = Laptop;
+export default Laptop;
