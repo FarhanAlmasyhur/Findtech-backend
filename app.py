@@ -3,7 +3,7 @@ from flask import Flask, request
 from flask.json import jsonify
 import pickle
 import numpy as np
-from db import jsonList, laptopList
+from db import jsonLaptopList, laptopList
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -16,7 +16,7 @@ model = pickle.load(open('classifier.pkl','rb'))
 @app.route('/laptops', methods=['GET'])
 def read():
     try:
-        return jsonify(jsonList), 200
+        return jsonify(jsonLaptopList), 200
     except Exception as e:
         return f"An Error Occured: {e}"
 

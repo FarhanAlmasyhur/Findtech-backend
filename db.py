@@ -14,4 +14,4 @@ laptopList = []
 for items in snapshot:
     laptop = Laptop(items['Name'], items['Price'], items['Image'])
     laptopList.append(laptop)
-jsonList = [e.serialize() for e in laptopList]
+jsonLaptopList = [e.serialize() for e in laptopList]
