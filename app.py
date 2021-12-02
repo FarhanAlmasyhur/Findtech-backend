@@ -3,7 +3,7 @@ from flask import Flask, request
 from flask.json import jsonify
 import pickle
 import numpy as np
-from db import jsonLaptopList, laptopList
+from db import jsonLaptopList, laptopList, snapshot
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -24,25 +24,59 @@ def read():
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.get_json()
-    price = data['price']
-    style = data['style']
-    weight = data['weight']
-    size = data['size']
-    os = data['os']
     display = data['display']
-    displayIPS = display['ips']
-    displayResolution = display['resolution']
     extras = data['extras']
-    touchExtras = extras['touch']
-    webcamExtras = extras['webcam']
-    laptop_attr = np.array([2,2,1,1,2,1,0,0,1.7,8500000,3]).reshape(1,-1)
-    predicted = model.predict(laptop_attr)
-    responseData = ""
-    for item in laptopList:
-        if (item.name == predicted):
-            responseData = item
-    return jsonify(responseData.serialize()),201
 
+    # laptop_attr = np.array([
+    #     data['os'],
+    #     storage['size'],
+    #     storage['type'],
+    #     data['size'],
+    #     display['resolution'],
+    #     display['ips'],
+    #     extras['touch'],
+    #     extras['webcam'],
+    #     data['weight'],
+    #     data['price'],
+    #     data['style']
+    # ]).reshape(1, -1)
+
+    laptop_attr = np.array([2,2,1,1,2,1,0,0,1.7,8500000,3]).reshape(1,-1)
+    predicted = model.predict(laptop_attr)[0]
+    neighbors = get_neighbors(snapshot_2_array(snapshot[predicted]))
+
+    responseData = ""
+    laptops = [laptopList[i].serialize() for i in neighbors]
+
+    # for item in laptopList:
+    #     if (item.name == predicted):
+    #         responseData = item
+    return jsonify(laptops), 201
+
+def get_neighbors(predicted_attr):
+    indeces = model.named_steps.kneighborsclassifier.kneighbors(
+        model.named_steps.columntransformer.transform(
+            predicted_attr
+        ),
+        return_distance=False
+    )
+
+    return indeces[0]
+
+def snapshot_2_array(data):
+    return np.array([
+        data['OS'],
+        data['Storage_Size'],
+        data['Storage_Type'],
+        data['Display_Size'],
+        data['Display_Resolution'],
+        data['IPS'],
+        data['Touch_Screen'],
+        data['Webcam'],
+        data['Weight'],
+        data['Price'],
+        data['Cluster']
+    ]).reshape(1, -1)
 
 
 if __name__ == '__main__':

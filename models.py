@@ -9,7 +9,7 @@ class Laptop:
 
     def serialize(self):
         return {
-            'name': self.name, 
+            'name': self.name,
             'price': self.price,
             'image': self.image,
         }
