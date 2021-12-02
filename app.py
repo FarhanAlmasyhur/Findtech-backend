@@ -23,35 +23,34 @@ def read():
 # Predict API
 @app.route('/predict', methods=['POST'])
 def predict():
-    data = request.get_json()
-    display = data['display']
-    extras = data['extras']
+    try:
+        
+        data = request.get_json()
+        laptop_attr = np.array([
+            data['os'],
+            data['storageSize'],
+            data['storageType'],
+            data['size'],
+            data['resolution'],
+            data['ips'],
+            data['touch'],
+            data['webcam'],
+            data['weight'],
+            data['price'],
+            data['style']
+        ]).reshape(1, -1)
 
-    # laptop_attr = np.array([
-    #     data['os'],
-    #     storage['size'],
-    #     storage['type'],
-    #     data['size'],
-    #     display['resolution'],
-    #     display['ips'],
-    #     extras['touch'],
-    #     extras['webcam'],
-    #     data['weight'],
-    #     data['price'],
-    #     data['style']
-    # ]).reshape(1, -1)
+        # laptop_attr = np.array([2,2,1,1,2,1,0,0,1.7,8500000,3]).reshape(1,-1)
+        predicted = model.predict(laptop_attr)[0]
+        neighbors = get_neighbors(snapshot_2_array(snapshot[predicted]))
 
-    laptop_attr = np.array([2,2,1,1,2,1,0,0,1.7,8500000,3]).reshape(1,-1)
-    predicted = model.predict(laptop_attr)[0]
-    neighbors = get_neighbors(snapshot_2_array(snapshot[predicted]))
+        laptops = [laptopList[i].serialize() for i in neighbors]
 
-    responseData = ""
-    laptops = [laptopList[i].serialize() for i in neighbors]
+        return jsonify(result=laptops, code=400,message="Prediction Successfull"), 200
+    except Exception as e:
+        print(e)
+        return jsonify(code=400,message="Error occured", result=[]), 400
 
-    # for item in laptopList:
-    #     if (item.name == predicted):
-    #         responseData = item
-    return jsonify(laptops), 201
 
 def get_neighbors(predicted_attr):
     indeces = model.named_steps.kneighborsclassifier.kneighbors(
