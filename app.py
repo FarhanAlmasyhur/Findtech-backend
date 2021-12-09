@@ -45,7 +45,7 @@ def predict():
 
         laptops = [laptopList[i].serialize() for i in neighbors]
 
-        return jsonify(result=laptops, code=400,message="Prediction Successfull"), 200
+        return jsonify(result=laptops, code=400,message="Prediction Success!"), 200
     except Exception as e:
         print(e)
         return jsonify(code=400,message="Error occured", result=[]), 400
