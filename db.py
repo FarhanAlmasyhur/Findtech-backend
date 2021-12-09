@@ -1,8 +1,9 @@
 from firebase_admin import credentials, initialize_app, db
 from models import Laptop
+from key import findtechkey
 
 # Initialize Realtime DB Firebase
-cred = credentials.Certificate('findtechKey.json')
+cred = credentials.Certificate(findtechkey)
 default_app = initialize_app(cred, {
     'databaseURL':'https://findtech-d396c-default-rtdb.asia-southeast1.firebasedatabase.app'
 })

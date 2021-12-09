@@ -50,3 +50,4 @@ coverage.xml
 docs/_build/
 #key
 findtechKey.json
+.env
