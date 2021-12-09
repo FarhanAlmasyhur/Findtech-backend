@@ -13,7 +13,7 @@ app = Flask(__name__)
 model = pickle.load(open('classifier.pkl','rb'))
 
 # GET laptop list 
-@app.route('/laptops', methods=['GET'])
+@app.route('/api/laptops', methods=['GET'])
 def read():
     try:
         return jsonify(jsonLaptopList), 200
@@ -21,7 +21,7 @@ def read():
         return f"An Error Occured: {e}"
 
 # Predict API
-@app.route('/predict', methods=['POST'])
+@app.route('/api/predict', methods=['POST'])
 def predict():
     try:
         
@@ -40,7 +40,6 @@ def predict():
             data['style']
         ]).reshape(1, -1)
 
-        # laptop_attr = np.array([2,2,1,1,2,1,0,0,1.7,8500000,3]).reshape(1,-1)
         predicted = model.predict(laptop_attr)[0]
         neighbors = get_neighbors(snapshot_2_array(snapshot[predicted]))
 
