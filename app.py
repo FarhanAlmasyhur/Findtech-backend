@@ -16,7 +16,7 @@ model = pickle.load(open('classifier.pkl','rb'))
 @app.route('/api/laptops', methods=['GET'])
 def read():
     try:
-        return jsonify(jsonLaptopList), 200
+        return jsonify(jsonLaptopList), 200,{'Access-Control-Allow-Origin': '*'}
     except Exception as e:
         return f"An Error Occured: {e}"
 
@@ -45,7 +45,7 @@ def predict():
 
         laptops = [laptopList[i].serialize() for i in neighbors]
 
-        return jsonify(result=laptops, code=400,message="Prediction Success!"), 200
+        return jsonify(result=laptops, code=400,message="Prediction Success!"), 200,{'Access-Control-Allow-Origin': '*'}
     except Exception as e:
         print(e)
         return jsonify(code=400,message="Error occured", result=[]), 400
