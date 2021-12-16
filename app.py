@@ -29,24 +29,37 @@ def get_paginated_list():
     try:
         page = int(request.args.get('page'))
         limit = int(request.args.get('limit'))
-        minPrice = int(request.args.get('minPrice'))
-        maxPrice = int(request.args.get('maxPrice'))
-        
-        for laptop in laptopList:
-            if(laptop.price >= minPrice and laptop.price <= maxPrice):
-                filteredLaptop.append(laptop)
+        minPrice = request.args.get('minPrice')
+        maxPrice = request.args.get('maxPrice')
 
-        jsonFilteredLaptop = [e.serialize() for e in filteredLaptop]
-        total_data = len(filteredLaptop)
-        obj['totalPages'] = math.ceil(total_data/limit)
+        if(minPrice != None and maxPrice != None):
+            for laptop in laptopList:
+                if(laptop.price >= int(minPrice) and laptop.price <= int(maxPrice)):
+                    filteredLaptop.append(laptop)
 
-        if(page * limit < total_data):
-            obj['docs'] = jsonFilteredLaptop[((page-1)*limit):(limit*page)]
-            obj['code'] = 200
+            jsonFilteredLaptop = [e.serialize() for e in filteredLaptop]
+            total_data = len(filteredLaptop)
+            obj['totalPages'] = math.ceil(total_data/limit)
+
+            if(page * limit < total_data):
+                obj['docs'] = jsonFilteredLaptop[((page-1)*limit):(limit*page)]
+                obj['code'] = 200
+            else:
+                obj['code'] = 205
+                obj['docs'] = []
+            return jsonify(obj), 200, {'Access-Control-Allow-Origin': '*'}
+
         else:
-            obj['code'] = 205
-            obj['docs'] = []
-        return jsonify(obj), 200, {'Access-Control-Allow-Origin': '*'}
+            total_data = len(laptopList)
+            obj['totalPages'] = math.ceil(total_data/limit)
+            if(page * limit < total_data):
+                obj['docs'] = jsonLaptopList[((page-1)*limit):(limit*page)]
+                obj['code'] = 200
+            else:
+                obj['code'] = 205
+                obj['docs'] = []
+            return jsonify(obj), 200, {'Access-Control-Allow-Origin': '*'}
+
     except Exception as err:
         print(err)
         return jsonify(code=400, message="Error occured", docs=[]), 400
