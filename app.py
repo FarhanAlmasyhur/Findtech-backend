@@ -3,6 +3,7 @@ from flask import Flask, request, make_response
 from flask.json import jsonify
 import pickle
 import numpy as np
+import math
 from db import jsonLaptopList, laptopList, snapshot
 
 # Initialize Flask app
@@ -13,12 +14,39 @@ app = Flask(__name__)
 model = pickle.load(open('classifier.pkl','rb'))
 
 # GET laptop list 
-@app.route('/api/laptops', methods=['GET'])
+@app.route('/api/getAllLaptops', methods=['GET'])
 def read():
     try:
         return jsonify(jsonLaptopList), 200, {'Access-Control-Allow-Origin': '*'}
     except Exception as e:
         return f"An Error Occured: {e}"
+
+# Pagination
+@app.route('/api/laptops',methods=['POST', 'OPTIONS'])
+def get_paginated_list():
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', '*')
+        response.headers.add('Access-Control-Allow-Methods', 'POST')
+        return response
+    obj = {}
+    try:
+        page = int(request.args.get('page'))
+        limit = int(request.args.get('limit'))
+        total_data = len(laptopList)
+        obj['totalPages'] = math.ceil(total_data/limit)
+        if(page * limit < total_data):
+            obj['docs'] = jsonLaptopList[((page-1)*limit):(limit*page)]
+            obj['code'] = 200
+        else:
+            obj['code'] = 205
+            obj['docs'] = []
+        return jsonify(obj), 200
+    except Exception as err:
+        print(err)
+        return jsonify(code=400, message="Error occured", docs=[]), 400
+    
 
 # Predict API
 @app.route('/api/predict', methods=['POST', 'OPTIONS'])
