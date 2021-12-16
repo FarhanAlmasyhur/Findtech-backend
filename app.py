@@ -1,5 +1,5 @@
 # Required imports
-from flask import Flask, request
+from flask import Flask, request, make_response
 from flask.json import jsonify
 import pickle
 import numpy as np
@@ -16,15 +16,21 @@ model = pickle.load(open('classifier.pkl','rb'))
 @app.route('/api/laptops', methods=['GET'])
 def read():
     try:
-        return jsonify(jsonLaptopList), 200,{'Access-Control-Allow-Origin': '*'}
+        return jsonify(jsonLaptopList), 200, {'Access-Control-Allow-Origin': '*'}
     except Exception as e:
         return f"An Error Occured: {e}"
 
 # Predict API
-@app.route('/api/predict', methods=['POST'])
+@app.route('/api/predict', methods=['POST', 'OPTIONS'])
 def predict():
+    if request.method == 'OPTIONS':
+        response = make_response()
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', '*')
+        response.headers.add('Access-Control-Allow-Methods', 'POST')
+        return response
+
     try:
-        
         data = request.get_json()
         laptop_attr = np.array([
             data['os'],
@@ -45,13 +51,10 @@ def predict():
 
         laptops = [laptopList[i].serialize() for i in neighbors]
 
-        return jsonify(result=laptops, code=400,message="Prediction Success!"), 200,{'Access-Control-Allow-Origin': '*', 
-                                                                                    'Access-Control-Allow-Methods' : 'GET, POST, OPTIONS', 
-                                                                                    'Access-Control-Allow-Credentials': True, 
-                                                                                    'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept'}
+        return jsonify(result=laptops, code=200, message="Prediction Success!"), 200, {'Access-Control-Allow-Origin': '*'}
     except Exception as e:
         print(e)
-        return jsonify(code=400,message="Error occured", result=[]), 400
+        return jsonify(code=400, message="Error occured", result=[]), 400
 
 
 def get_neighbors(predicted_attr):
