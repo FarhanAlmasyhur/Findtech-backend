@@ -45,7 +45,10 @@ def predict():
 
         laptops = [laptopList[i].serialize() for i in neighbors]
 
-        return jsonify(result=laptops, code=400,message="Prediction Success!"), 200,{'Access-Control-Allow-Origin': '*'}
+        return jsonify(result=laptops, code=400,message="Prediction Success!"), 200,{'Access-Control-Allow-Origin': '*', 
+                                                                                    'Access-Control-Allow-Methods' : 'GET, POST, OPTIONS', 
+                                                                                    'Access-Control-Allow-Credentials': True, 
+                                                                                    'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept'}
     except Exception as e:
         print(e)
         return jsonify(code=400,message="Error occured", result=[]), 400
